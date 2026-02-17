@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: ticket_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ticket_system
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:alpine
+    container_name: ticket_cache
+    ports:
+      - "6379:6379"
