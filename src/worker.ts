@@ -1,15 +1,18 @@
 import "reflect-metadata";
 import { Worker, Job } from 'bullmq';
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import { dataSource, initDb } from './config/db.js'; // Assumindo que você configurou o TypeORM/DataSource
 import { Ticket } from './entities/Ticket.js';
 
 // 0. Inicializa o banco de dados antes de tudo
 initDb();
 
+import "dotenv/config";
+
 const connection = new Redis({
-    host: 'localhost',
-    port: 6379,
+    host: process.env.REDIS_HOST || 'localhost',
+    port: Number(process.env.REDIS_PORT) || 6379,
+    password: process.env.REDIS_PASSWORD,
     maxRetriesPerRequest: null
 });
 
@@ -43,7 +46,7 @@ const ticketWorker = new Worker('TicketReservations', async (job: Job) => {
 
         return { success: true, ticketId: ticket.id };
     });
-}, { connection });
+}, { connection: connection as any });
 
 ticketWorker.on('failed', (job, err) => {
     console.error(`[Worker] Falha no Job ${job?.id}: ${err.message}`);

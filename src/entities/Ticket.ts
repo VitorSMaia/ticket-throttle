@@ -3,17 +3,20 @@ import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn } from 'typeor
 @Entity('tickets')
 export class Ticket {
     @PrimaryGeneratedColumn('uuid')
-    id: string;
+    id!: string;
 
     @Column({ type: 'varchar' })
-    event_name: string;
+    event_name!: string;
 
     @Column({ type: 'varchar', default: 'AVAILABLE' }) // AVAILABLE, RESERVED, SOLD
-    status: string;
+    status!: string;
 
     @Column({ type: 'varchar', nullable: true })
-    userId: string;
+    userId!: string;
+
+    @Column({ type: 'timestamp', nullable: true })
+    reservedAt!: Date;
 
     @UpdateDateColumn()
-    updated_at: Date;
+    updated_at!: Date;
 }
