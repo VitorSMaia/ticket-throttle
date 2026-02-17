@@ -1,4 +1,4 @@
-# 🎟️ MASP Ticket Throttle
+# Ticket Throttle
 
 Sistema de compra de ingressos de alta performance, projetado para lidar com alta concorrência usando throttling com Redis e BullMQ, pagamento via Stripe e expiração automática de reservas.
 
