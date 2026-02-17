@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_URL } from '../config';
 
 export function AdminPanel() {
     const [event, setEvent] = useState('');
@@ -8,7 +9,7 @@ export function AdminPanel() {
     const generateTickets = async () => {
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:3000/tickets/batch', {
+            const res = await fetch(`${API_URL}/tickets/batch`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ eventName: event, quantity: qty })
