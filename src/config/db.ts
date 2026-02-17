@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 import { Ticket } from "../entities/Ticket.js"; // Importe a classe diretamente
-
+import { IdempotencyKey } from "../entities/IdempotencyKey.js";
 import "dotenv/config";
 
 export const dataSource = new DataSource({
@@ -10,9 +10,9 @@ export const dataSource = new DataSource({
     username: process.env.DB_USER || "user",
     password: process.env.DB_PASSWORD || "password",
     database: process.env.DB_NAME || "ticket_system",
-    entities: [Ticket], // Use a classe importada aqui
-    synchronize: true,  // Isso cria as tabelas automaticamente
-    logging: true,      // ATIVE ISSO para ver o SQL no terminal e saber se ele tentou criar a tabela
+    entities: [Ticket, IdempotencyKey], // Use a classe importada aqui
+    synchronize: process.env.NODE_ENV !== 'production',
+    logging: process.env.NODE_ENV !== 'production',
 });
 
 export const initDb = async () => {

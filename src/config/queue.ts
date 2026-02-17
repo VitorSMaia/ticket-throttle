@@ -14,9 +14,21 @@ const connection = new Redis({
 
 export const ticketQueue = new Queue('TicketReservations', { connection: connection as any });
 
-export async function addTicketToQueue(data: { userId: string, ticketId: string }) {
-    await ticketQueue.add('reserve', data, {
-        attempts: 3, // Retry automático em caso de falha no banco/gateway
-        backoff: { type: 'exponential', delay: 1000 }
+export const addTicketToQueue = async (data: { userId: string, ticketId: string, paymentIntentId?: string }) => {
+    return await ticketQueue.add('reservation', data, {
+        removeOnComplete: true,
+        removeOnFail: false
     });
+};
+
+// Adiciona um trabalho com atraso (delay)
+export async function scheduleExpirationCheck(ticketId: string) {
+    await ticketQueue.add(
+        'check-expiration',
+        { ticketId },
+        {
+            delay: 15 * 60 * 1000, // 15 minutos em milissegundos
+            removeOnComplete: true
+        }
+    );
 }
