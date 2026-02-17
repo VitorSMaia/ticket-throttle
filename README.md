@@ -1,4 +1,4 @@
-# MASP Ticket Throttle
+# Ticket Throttle
 
 A high-performance ticket reservation system designed to handle high concurrency using a throttling mechanism with Redis and BullMQ.
 
