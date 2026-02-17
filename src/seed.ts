@@ -17,8 +17,8 @@ async function seed() {
         }
 
         await ticketRepo.save([
-            { event_name: 'MASP - Tarsila', status: 'AVAILABLE' },
-            { event_name: 'MASP - Lina Bo Bardi', status: 'AVAILABLE' }
+            { event_name: 'MASP - Tarsila', status: 'AVAILABLE', price: 60.00 },
+            { event_name: 'MASP - Lina Bo Bardi', status: 'AVAILABLE', price: 55.50 }
         ]);
 
         console.log('🚀 Sucesso! Ingressos criados.');

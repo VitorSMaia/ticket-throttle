@@ -12,13 +12,33 @@ import "dotenv/config";
 const connection = new Redis({
     host: process.env.REDIS_HOST || 'localhost',
     port: Number(process.env.REDIS_PORT) || 6379,
-    password: process.env.REDIS_PASSWORD,
+    password: process.env.REDIS_PASSWORD || undefined, // Garante que a senha seja enviada se existir
     maxRetriesPerRequest: null
 });
 
 const ticketWorker = new Worker('TicketReservations', async (job: Job) => {
-    const { userId, ticketId } = job.data;
+    const { ticketId, userId } = job.data;
 
+    if (job.name === 'check-expiration') {
+        console.log(`[Clock] Verificando expiração do bilhete: ${ticketId}`);
+
+        return await dataSource.transaction(async (em) => {
+            const ticket = await em.findOne(Ticket, {
+                where: { id: ticketId, status: 'RESERVED' }, // Só expira se ainda estiver RESERVED
+                lock: { mode: 'pessimistic_write' }
+            });
+
+            if (ticket) {
+                console.log(`[Clock] Tempo esgotado. Libertando bilhete ${ticketId}...`);
+                ticket.status = 'AVAILABLE';
+                ticket.userId = null;
+                ticket.reservedAt = null; // Limpa o timestamp de reserva
+                await em.save(ticket);
+            }
+        });
+    }
+
+    // Processamento de Reserva (Job 'reservation' ou default)
     console.log(`[Worker] Processando reserva: Usuário ${userId}, Ingresso ${ticketId}`);
 
     // Usando Transação para garantir consistência (Padrão Sênior)

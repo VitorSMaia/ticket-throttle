@@ -3,17 +3,25 @@ import cors from 'cors';
 import express from 'express';
 import { initDb } from './config/db.js';
 import ticketRoutes from './routes/ticket.routes.js';
-import reservationRoutes from './routes/reservation.routes.js';
+import { webhookRouter } from './routes/webhooks.js';
 
 const app = express();
 app.use(cors()); // Permite requisições do seu front-end Vite
+
+// Webhooks devem vir ANTES do express.json() porque o Stripe precisa do body raw
+app.use('/webhooks', webhookRouter);
+
 app.use(express.json());
 
-// Inicializa Banco de Dados
-initDb();
+const startServer = async () => {
+    // Inicializa Banco de Dados
+    await initDb();
 
-// Rotas
-app.use('/tickets', ticketRoutes);
-app.use('/reserve', reservationRoutes);
+    // Rotas
+    app.use('/tickets', ticketRoutes);
 
-app.listen(3000, () => console.log('🔥 Server rodando na porta 3000'));
+
+    app.listen(3000, () => console.log('🔥 Server rodando na porta 3000'));
+};
+
+startServer();
